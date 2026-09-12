@@ -1,0 +1,15 @@
+# yt-dlp[default] puxa: brotli, certifi, mutagen, pycryptodomex, requests,
+# urllib3 e websockets — todos necessários no mundo real (streams cifrados,
+# extractors por websocket, escrita de tags ID3).
+#
+# Aqui fica só o PISO. A versão exata é fixada no build pelo argumento
+# YTDLP_VERSION (ver Dockerfile), porque o yt-dlp quebra sempre que o YouTube
+# muda e `yt-dlp -U` não funciona em instalação via pip:
+#
+#   make update YTDLP_VERSION=2025.12.01
+#
+yt-dlp[default]>=2025.1.1
+
+# ffmpeg NÃO é dependência pip — vem da imagem Docker.
+# A CLI usa argparse (stdlib) e renderiza o progresso à mão, de propósito:
+# zero dependências além do yt-dlp.

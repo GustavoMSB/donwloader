@@ -1,0 +1,15 @@
+# Gerado pelo dl.sh/make setup com o uid do host — é local, não versionar.
+.env
+
+# Conteúdo do usuário
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/

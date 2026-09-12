@@ -1,0 +1,17 @@
+input/
+output/
+.env
+.git/
+.gitignore
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.zip
+*.mp3
+README.md
+Makefile
+dl.sh
+docker-compose.yml

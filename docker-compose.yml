@@ -1,0 +1,48 @@
+name: mp3dl
+
+# Âncora YAML: adicionar o serviço web na fase 2 mexe só no bloco comentado
+# lá embaixo, sem reestruturar nada.
+x-common: &common
+  build:
+    context: .
+    args:
+      HOST_UID: ${HOST_UID:-1000}
+      HOST_GID: ${HOST_GID:-1000}
+      YTDLP_VERSION: ${YTDLP_VERSION:-}
+      YTDLP_PRE: ${YTDLP_PRE:-}
+  image: mp3dl:local
+  # Mesmo uid do host => os .zip em output/ saem como gustavo:gustavo.
+  user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+  # PID 1 de verdade: faz reap dos subprocessos do ffmpeg e encaminha
+  # SIGINT/SIGTERM. Sem isto, Ctrl-C no meio de um download é imprevisível.
+  init: true
+  environment:
+    # Sem TZ (+ pacote tzdata) o container roda em UTC e o timestamp do zip
+    # sai 3h deslocado do relógio de São Paulo.
+    TZ: ${TZ:-America/Sao_Paulo}
+    INPUT_DIR: /app/input
+    OUTPUT_DIR: /app/output
+    # Só para exibição: o caminho equivalente no host, para a CLI não mostrar
+    # "/app/output/..." para um usuário que vê "./output/...".
+    HOST_OUTPUT_DIR: ./output
+    PYTHONUNBUFFERED: "1"
+  volumes:
+    - ./input:/app/input:ro   # read-only: nenhum bug pode comer suas listas
+    - ./output:/app/output
+    - ytdlp-cache:/app/.cache
+
+services:
+  downloader:
+    <<: *common
+    stdin_open: true
+    tty: true
+
+  # Fase 2 — descomentar quando existir downloader/api.py
+  # web:
+  #   <<: *common
+  #   entrypoint: ["python"]
+  #   command: ["-m", "uvicorn", "downloader.api:app", "--host", "0.0.0.0", "--port", "8000"]
+  #   ports: ["8000:8000"]
+
+volumes:
+  ytdlp-cache:
